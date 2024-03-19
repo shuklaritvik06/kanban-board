@@ -34,9 +34,6 @@ To get started with the Kanban Board, follow these steps:
 
 6. **Access the Application**: Once the development server is running, access the Kanban board application in your web browser at `http://localhost:3000`.
 
-7. **Start Managing Tasks**: Create tasks, move them between columns, update task details, and collaborate with your team members to effectively manage your projects.
-
-These additional steps will guide users through setting up the backend server before starting the development server for the Kanban board application.
 
 ## License
 
