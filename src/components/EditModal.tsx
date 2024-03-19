@@ -3,46 +3,59 @@ import { Fragment, useState } from 'react'
 import { Task } from '../../types/interfaces'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
+import { filterTasks } from '../utils/app_utils'
 
 function EditModal({
   isOpen,
   setIsOpen,
   setTasks,
   currentUpdateTask,
+  column,
   id,
 }: {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
   id: string
+  column: string
   currentUpdateTask: Task
 }) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
-  } = useForm()
+  } = useForm({
+    defaultValues: {
+      title: currentUpdateTask.title,
+      desc: currentUpdateTask.body,
+      priority: currentUpdateTask.priority,
+    },
+  })
   const [submitting, setSubmitting] = useState(false)
 
   const onSubmit = (data: any) => {
     setSubmitting(true)
     axios
-      .post('http://localhost:8000/tasks/update/', {
+      .put(`http://localhost:8000/tasks/update/${id}`, {
         title: data.title,
         body: data.desc,
         priority: data.priority,
-        column: 1,
       })
       .then((res) => {
-        setTasks(res.data)
         setIsOpen(false)
+        const filteredData = filterTasks(res.data)
+        if (column === 'todos') {
+          setTasks(filteredData.todos)
+        } else if (column === 'progress') {
+          setTasks(filteredData.progress)
+        } else {
+          setTasks(filteredData.done)
+        }
       })
       .catch((error) => {
         console.error('Error adding task:', error)
       })
       .finally(() => {
-        reset()
         setSubmitting(false)
       })
   }
@@ -79,7 +92,6 @@ function EditModal({
                   <input
                     type="text"
                     placeholder="Task Title"
-                    value={currentUpdateTask.title}
                     {...register('title', { required: true })}
                     className="outline-none border rounded-md p-2"
                   />
@@ -91,7 +103,6 @@ function EditModal({
                   <textarea
                     placeholder="Task Body"
                     rows={5}
-                    value={currentUpdateTask.body}
                     {...register('desc', { required: true })}
                     className="outline-none border rounded-md p-2"
                   />
@@ -102,7 +113,6 @@ function EditModal({
                   )}
                   <select
                     title="Priority"
-                    value={currentUpdateTask.priority}
                     {...register('priority', { required: true })}
                     className="p-2 outline-none"
                   >

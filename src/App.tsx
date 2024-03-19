@@ -7,10 +7,12 @@ import {
   Droppable,
 } from 'react-beautiful-dnd'
 import { Task } from '../types/interfaces'
+import { filterTasks } from './utils/app_utils'
 import toast, { Toaster } from 'react-hot-toast'
 import axios from 'axios'
 import Modal from './components/Modal'
 import Loader from './components/Loader'
+import EditMenu from './components/EditMenu'
 
 function App(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
@@ -18,13 +20,6 @@ function App(): JSX.Element {
   const [onProgressTasks, setOnProgressTasks] = useState<Task[]>([])
   const [doneTasks, setDoneTasks] = useState<Task[]>([])
   const [isOpen, setIsOpen] = useState<boolean>(false)
-
-  const filterTasks = (tasks: Task[]) => {
-    const todos = tasks.filter((item) => item.column === 1)
-    const progress = tasks.filter((item) => item.column === 2)
-    const done = tasks.filter((item) => item.column === 3)
-    return { todos, progress, done }
-  }
 
   useEffect(() => {
     setLoading(true)
@@ -47,7 +42,7 @@ function App(): JSX.Element {
   const titleCase = (text: string): string => {
     return text.charAt(0).toUpperCase() + text.slice(1)
   }
-  const renderTasks = (taskList: Task[]): JSX.Element[] => {
+  const renderTasks = (taskList: Task[], type: string): JSX.Element[] => {
     return taskList?.map((item, index) => (
       <Draggable
         key={item?._id}
@@ -73,6 +68,17 @@ function App(): JSX.Element {
               >
                 {titleCase(item?.priority)}
               </div>
+              <EditMenu
+                setTasks={
+                  type === 'done'
+                    ? setDoneTasks
+                    : type === 'progress'
+                      ? setOnProgressTasks
+                      : setTodosTasks
+                }
+                column={type}
+                id={item?._id}
+              />
             </div>
             <div className="flex flex-col gap-2 mt-5">
               <div className="font-bold text-2xl">{item?.title}</div>
@@ -193,7 +199,7 @@ function App(): JSX.Element {
                   </div>
                   <div className="h-1 bg-primary w-full mt-4"></div>
                   <div className="mt-5 space-y-4">
-                    {renderTasks(todosTasks)}
+                    {renderTasks(todosTasks, 'todos')}
                     {provided.placeholder}
                   </div>
                 </div>
@@ -215,7 +221,8 @@ function App(): JSX.Element {
                   </div>
                   <div className="h-1 bg-yellow-500 w-full mt-5"></div>
                   <div className="mt-5 space-y-4">
-                    {renderTasks(onProgressTasks)} {provided.placeholder}
+                    {renderTasks(onProgressTasks, 'progress')}
+                    {provided.placeholder}
                   </div>
                 </div>
               )}
@@ -236,7 +243,8 @@ function App(): JSX.Element {
                   </div>
                   <div className="h-1 bg-green-500 w-full mt-5"></div>
                   <div className="mt-5 space-y-4">
-                    {renderTasks(doneTasks)} {provided.placeholder}
+                    {renderTasks(doneTasks, 'done')}
+                    {provided.placeholder}
                   </div>
                 </div>
               )}

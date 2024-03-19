@@ -1,21 +1,33 @@
 import { Menu } from '@headlessui/react'
-import axios from 'axios'
 import { Task } from '../../types/interfaces'
-import EditModal from './EditModal'
 import { useState } from 'react'
+import EditModal from './EditModal'
+import axios from 'axios'
+import { filterTasks } from '../utils/app_utils'
 
 function EditMenu({
   id,
   setTasks,
+  column,
 }: {
   id: string
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
+  column: string
 }) {
   const deleteTask = () => {
     axios
       .delete(`http://localhost:8000/tasks/delete/${id}`)
       .then((response) => response.data)
-      .then((data) => setTasks(data))
+      .then((data) => {
+        const filteredData = filterTasks(data)
+        if (column === 'todos') {
+          setTasks(filteredData.todos)
+        } else if (column === 'progress') {
+          setTasks(filteredData.progress)
+        } else {
+          setTasks(filteredData.done)
+        }
+      })
   }
 
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false)
@@ -25,16 +37,15 @@ function EditMenu({
     axios
       .get(`http://localhost:8000/tasks/${id}`)
       .then((response) => response.data)
-      .then((data) => setUpdateTask(data))
-      .finally(() => setIsEditOpen(false))
+      .then((data) => {
+        setUpdateTask(data)
+        setIsEditOpen(true)
+      })
   }
   return (
     <>
       <Menu as="div" className="relative">
-        <Menu.Button
-          className="flex items-center space-x-2"
-          onClick={handleEdit}
-        >
+        <Menu.Button className="flex items-center space-x-2">
           <div className="text-lg font-bold tracking-widest cursor-pointer">
             ...
           </div>
@@ -43,6 +54,7 @@ function EditMenu({
           <Menu.Item>
             {({ active }) => (
               <button
+                onClick={handleEdit}
                 className={`${
                   active ? 'bg-blue-500 text-white' : 'text-gray-900'
                 } flex items-center w-full px-4 py-2 text-sm`}
@@ -69,6 +81,7 @@ function EditMenu({
         <EditModal
           id={id}
           setTasks={setTasks}
+          column={column}
           currentUpdateTask={currentUpdateTask!}
           isOpen={isEditOpen}
           setIsOpen={setIsEditOpen}
