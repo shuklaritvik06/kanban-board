@@ -2,10 +2,12 @@ import { Fragment, useEffect, useState } from 'react'
 import {
   DragDropContext,
   Draggable,
+  DraggableLocation,
   DropResult,
   Droppable,
 } from 'react-beautiful-dnd'
 import { Task } from '../types/interfaces'
+import toast, { Toaster } from 'react-hot-toast'
 import axios from 'axios'
 import Modal from './components/Modal'
 import Loader from './components/Loader'
@@ -47,7 +49,11 @@ function App(): JSX.Element {
   }
   const renderTasks = (taskList: Task[]): JSX.Element[] => {
     return taskList?.map((item, index) => (
-      <Draggable key={item._id} draggableId={item._id.toString()} index={index}>
+      <Draggable
+        key={item?._id}
+        draggableId={item?._id.toString()}
+        index={index}
+      >
         {(provided, snapshot) => (
           <div
             className="rounded-2xl p-6 bg-white"
@@ -77,13 +83,75 @@ function App(): JSX.Element {
       </Draggable>
     ))
   }
+  const handleUpdate = async (task: Task, destination: DraggableLocation) => {
+    try {
+      const columnMap: { [key: string]: { column: number; priority: string } } =
+        {
+          toDos: { column: 1, priority: 'low' },
+          onProgress: { column: 2, priority: 'high' },
+          doneTasks: { column: 3, priority: 'completed' },
+        }
+
+      const { column, priority } = columnMap[destination.droppableId]
+
+      const response = await axios.put(
+        `http://localhost:8000/tasks/update/${task._id}`,
+        {
+          column,
+          priority:
+            destination.droppableId === 'doneTasks' ? 'completed' : priority,
+        }
+      )
+
+      toast.success('Updated the Task')
+      const { done, progress, todos } = filterTasks(response.data)
+      setTodosTasks(todos)
+      setOnProgressTasks(progress)
+      setDoneTasks(done)
+    } catch (error: any) {
+      toast.error(error.message)
+    }
+  }
 
   const onDragEnd = (result: DropResult) => {
-    console.log(result)
+    const { source, destination } = result
+    if (!destination) return
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return
+    let sourceElement: Task | undefined
+    let todos = [...todosTasks]
+    let onProgress = [...onProgressTasks]
+    let completed = [...doneTasks]
+    if (source.droppableId === 'toDos') {
+      sourceElement = todos[source.index]
+      todos.splice(source.index, 1)
+    } else if (source.droppableId === 'onProgress') {
+      sourceElement = onProgress[source.index]
+      onProgress.splice(source.index, 1)
+    } else if (source.droppableId === 'doneTasks') {
+      sourceElement = completed[source.index]
+      completed.splice(source.index, 1)
+    }
+    if (sourceElement !== undefined) {
+      if (destination.droppableId === 'toDos') {
+        todos.splice(destination.index, 0, sourceElement)
+        handleUpdate(sourceElement, destination)
+      } else if (destination.droppableId === 'onProgress') {
+        onProgress.splice(destination.index, 0, sourceElement)
+        handleUpdate(sourceElement, destination)
+      } else if (destination.droppableId === 'doneTasks') {
+        completed.splice(destination.index, 0, sourceElement)
+        handleUpdate(sourceElement, destination)
+      }
+    }
   }
 
   return (
     <Fragment>
+      <Toaster position="top-right" />
       {loading ? (
         <Loader />
       ) : (

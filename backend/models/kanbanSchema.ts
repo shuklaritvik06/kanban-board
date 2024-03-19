@@ -29,7 +29,7 @@ const tasksSchema: Schema<ITasks> = new mongoose.Schema(
     priority: {
       type: String,
       required: [true, 'Priority is required'],
-      enum: ['low', 'medium', 'high'],
+      enum: ['low', 'medium', 'high', 'completed'],
     },
     column: {
       type: Number,
