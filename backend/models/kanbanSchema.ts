@@ -35,6 +35,6 @@ const tasksSchema: Schema<ITasks> = new mongoose.Schema(
   { timestamps: true }
 )
 
-const TaskModel: Model<ITasks> = mongoose.model<ITasks>('tasks', tasksSchema)
+const TaskModel: Model<ITasks> = mongoose.model<ITasks>('kanban', tasksSchema)
 
 export default TaskModel

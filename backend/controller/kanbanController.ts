@@ -1,28 +1,21 @@
 import { Request, Response } from 'express'
-import { ITasks, Tasks } from '../types/interfaces'
+import { ITasks } from '../types/interfaces'
 import TaskModel from '../models/kanbanSchema'
-
-function getTasks(tasks: any) {
-  let todos = tasks.filter((task: any) => task.column === 1)
-  let onProgress = tasks.filter((task: any) => task.column === 2)
-  let doneTasks = tasks.filter((task: any) => task.column === 3)
-
-  return { todos, onProgress, doneTasks }
-}
 
 export async function addTask(req: Request, res: Response): Promise<void> {
   try {
-    const { title, body, priority, column } = req.body
+    const { title, body, priority } = req.body
     const task: ITasks = await TaskModel.create({
       title,
       body,
       priority,
-      column,
     })
     res.status(201).json(task)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
-    res.status(500).json({ error: 'Internal server error' })
+    res
+      .status(500)
+      .json({ error: 'Internal server error', message: error.message })
   }
 }
 
@@ -36,9 +29,11 @@ export async function deleteTask(req: Request, res: Response): Promise<void> {
     }
     const allTasks = await TaskModel.find({})
     res.json(allTasks)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
-    res.status(500).json({ error: 'Internal server error' })
+    res
+      .status(500)
+      .json({ error: 'Internal server error', message: error.message })
   }
 }
 
@@ -54,19 +49,23 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
     }
     const allTasks = await TaskModel.find({})
     res.json(allTasks)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
-    res.status(500).json({ error: 'Internal server error' })
+    res
+      .status(500)
+      .json({ error: 'Internal server error', message: error.message })
   }
 }
 
 export async function readTasks(req: Request, res: Response): Promise<void> {
   try {
     const tasks = await TaskModel.find({})
-    res.json(getTasks(tasks))
-  } catch (error) {
+    res.json(tasks)
+  } catch (error: any) {
     console.error(error)
-    res.status(500).json({ error: 'Internal server error' })
+    res
+      .status(500)
+      .json({ error: 'Internal server error', message: error.message })
   }
 }
 
@@ -79,8 +78,10 @@ export async function readTask(req: Request, res: Response): Promise<void> {
       return
     }
     res.json(task)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
-    res.status(500).json({ error: 'Internal server error' })
+    res
+      .status(500)
+      .json({ error: 'Internal server error', message: error.message })
   }
 }

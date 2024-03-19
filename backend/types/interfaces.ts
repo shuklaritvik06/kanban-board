@@ -12,14 +12,7 @@ export interface Task {
   title: string
   body: string
   priority: string
-  column: number
   createdAt: string
   updatedAt: string
   __v: number
-}
-
-export interface Tasks {
-  toDos: Task[]
-  onProgress: Task[]
-  doneTasks: Task[]
 }
