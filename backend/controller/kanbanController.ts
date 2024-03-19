@@ -48,7 +48,8 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
       res.status(404).json({ error: 'Task not found' })
       return
     }
-    res.json(updateTask)
+    const allTasks = await TaskModel.find({})
+    res.json(allTasks)
   } catch (error: any) {
     console.error(error)
     res
