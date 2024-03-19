@@ -2,6 +2,9 @@
 
 This project aims to provide a simple yet effective Kanban board implementation for managing tasks. This Kanban board offers a user-friendly interface to streamline your processes.
 
+![](./screenshots/Board%20Screen.png)
+![](./screenshots/Add%20Task.png)
+
 ## Getting Started
 
 To get started with the Kanban Board, follow these steps:
