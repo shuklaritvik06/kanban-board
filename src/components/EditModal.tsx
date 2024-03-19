@@ -36,7 +36,7 @@ function EditModal({
   const onSubmit = (data: any) => {
     setSubmitting(true)
     axios
-      .put(`http://localhost:8000/tasks/update/${id}`, {
+      .put(`${process.env.REACT_APP_API_URL}/tasks/update/${id}`, {
         title: data.title,
         body: data.desc,
         priority: data.priority,

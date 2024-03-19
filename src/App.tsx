@@ -24,7 +24,7 @@ function App(): JSX.Element {
   useEffect(() => {
     setLoading(true)
     axios
-      .get('http://localhost:8000/tasks')
+      .get(`${process.env.REACT_APP_API_URL}/tasks`)
       .then((response) => response.data)
       .then((data) => {
         const { done, progress, todos } = filterTasks(data)
@@ -100,11 +100,14 @@ function App(): JSX.Element {
 
       const { column, priority } = columnMap[destination.droppableId]
 
-      await axios.put(`http://localhost:8000/tasks/update/${task._id}`, {
-        column,
-        priority:
-          destination.droppableId === 'doneTasks' ? 'completed' : priority,
-      })
+      await axios.put(
+        `${process.env.REACT_APP_API_URL}/tasks/update/${task._id}`,
+        {
+          column,
+          priority:
+            destination.droppableId === 'doneTasks' ? 'completed' : priority,
+        }
+      )
       toast.success('Updated the Task')
     } catch (error: any) {
       toast.error(error.message)

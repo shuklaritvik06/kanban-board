@@ -16,7 +16,7 @@ function EditMenu({
 }) {
   const deleteTask = () => {
     axios
-      .delete(`http://localhost:8000/tasks/delete/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL}/tasks/delete/${id}`)
       .then((response) => response.data)
       .then((data) => {
         const filteredData = filterTasks(data)
@@ -35,7 +35,7 @@ function EditMenu({
 
   const handleEdit = () => {
     axios
-      .get(`http://localhost:8000/tasks/${id}`)
+      .get(`${process.env.REACT_APP_API_URL}/tasks/${id}`)
       .then((response) => response.data)
       .then((data) => {
         setUpdateTask(data)

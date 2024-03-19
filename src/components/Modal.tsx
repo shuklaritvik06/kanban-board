@@ -24,7 +24,7 @@ function Modal({
   const onSubmit = (data: any) => {
     setSubmitting(true)
     axios
-      .post('http://localhost:8000/tasks/add', {
+      .post(`${process.env.REACT_APP_API_URL}/tasks/add`, {
         title: data.title,
         body: data.desc,
         priority: data.priority,

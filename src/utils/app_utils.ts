@@ -1,4 +1,5 @@
 import { Task } from '../../types/interfaces'
+
 export const filterTasks = (tasks: Task[]) => {
   const todos = tasks.filter((item) => item.column === 1)
   const progress = tasks.filter((item) => item.column === 2)
