@@ -94,20 +94,12 @@ function App(): JSX.Element {
 
       const { column, priority } = columnMap[destination.droppableId]
 
-      const response = await axios.put(
-        `http://localhost:8000/tasks/update/${task._id}`,
-        {
-          column,
-          priority:
-            destination.droppableId === 'doneTasks' ? 'completed' : priority,
-        }
-      )
-
+      await axios.put(`http://localhost:8000/tasks/update/${task._id}`, {
+        column,
+        priority:
+          destination.droppableId === 'doneTasks' ? 'completed' : priority,
+      })
       toast.success('Updated the Task')
-      const { done, progress, todos } = filterTasks(response.data)
-      setTodosTasks(todos)
-      setOnProgressTasks(progress)
-      setDoneTasks(done)
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -137,16 +129,22 @@ function App(): JSX.Element {
     }
     if (sourceElement !== undefined) {
       if (destination.droppableId === 'toDos') {
+        sourceElement.priority = 'low'
         todos.splice(destination.index, 0, sourceElement)
         handleUpdate(sourceElement, destination)
       } else if (destination.droppableId === 'onProgress') {
+        sourceElement.priority = 'high'
         onProgress.splice(destination.index, 0, sourceElement)
         handleUpdate(sourceElement, destination)
       } else if (destination.droppableId === 'doneTasks') {
+        sourceElement.priority = 'completed'
         completed.splice(destination.index, 0, sourceElement)
         handleUpdate(sourceElement, destination)
       }
     }
+    setTodosTasks(todos)
+    setOnProgressTasks(onProgress)
+    setDoneTasks(completed)
   }
 
   return (
