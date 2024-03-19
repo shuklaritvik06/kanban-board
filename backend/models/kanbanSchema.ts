@@ -31,6 +31,11 @@ const tasksSchema: Schema<ITasks> = new mongoose.Schema(
       required: [true, 'Priority is required'],
       enum: ['low', 'medium', 'high'],
     },
+    column: {
+      type: Number,
+      required: [true, 'Column is required'],
+      enum: [1, 2, 3],
+    },
   },
   { timestamps: true }
 )

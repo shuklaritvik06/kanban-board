@@ -1,8 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import axios from 'axios'
-import { Task, Tasks } from '../../types/interfaces'
+import { Task } from '../../types/interfaces'
 import { useForm } from 'react-hook-form'
+import axios from 'axios'
 
 function EditModal({
   isOpen,
@@ -13,7 +13,7 @@ function EditModal({
 }: {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setTasks: React.Dispatch<React.SetStateAction<Tasks>>
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>
   id: string
   currentUpdateTask: Task
 }) {

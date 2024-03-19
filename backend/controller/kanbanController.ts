@@ -4,11 +4,12 @@ import TaskModel from '../models/kanbanSchema'
 
 export async function addTask(req: Request, res: Response): Promise<void> {
   try {
-    const { title, body, priority } = req.body
+    const { title, body, priority, column } = req.body
     const task: ITasks = await TaskModel.create({
       title,
       body,
       priority,
+      column,
     })
     res.status(201).json(task)
   } catch (error: any) {

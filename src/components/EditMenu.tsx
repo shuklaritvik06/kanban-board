@@ -1,6 +1,6 @@
 import { Menu } from '@headlessui/react'
 import axios from 'axios'
-import { Task, Tasks } from '../../types/interfaces'
+import { Task } from '../../types/interfaces'
 import EditModal from './EditModal'
 import { useState } from 'react'
 
@@ -9,7 +9,7 @@ function EditMenu({
   setTasks,
 }: {
   id: string
-  setTasks: React.Dispatch<React.SetStateAction<Tasks>>
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>
 }) {
   const deleteTask = () => {
     axios

@@ -1,8 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import axios from 'axios'
-import { Tasks } from '../../types/interfaces'
 import { useForm } from 'react-hook-form'
+import { Task } from '../../types/interfaces'
 
 function Modal({
   isOpen,
@@ -11,7 +11,7 @@ function Modal({
 }: {
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setTasks: React.Dispatch<React.SetStateAction<Tasks>>
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>
 }) {
   const {
     register,
@@ -31,7 +31,7 @@ function Modal({
         column: 1,
       })
       .then((res) => {
-        setTasks(res.data)
+        setTasks((prev) => [...prev, res.data])
         setIsOpen(false)
       })
       .catch((error) => {
@@ -47,20 +47,20 @@ function Modal({
     <Transition show={isOpen} as={Fragment}>
       <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
         <Transition.Child
-          enter="ease-out duration-100"
+          enter="duration-100"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in duration-200"
+          leave="duration-200"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
           <Dialog.Overlay className="fixed inset-0 bg-black/25" />
         </Transition.Child>
         <Transition.Child
-          enter="ease-out duration-100"
+          enter="duration-100"
           enterFrom="opacity-0 scale-95"
           enterTo="opacity-100 scale-100"
-          leave="ease-in duration-200"
+          leave="duration-200"
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >

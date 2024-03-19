@@ -1,9 +1,13 @@
 import { Fragment, useEffect, useState } from 'react'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import {
+  DragDropContext,
+  Draggable,
+  DropResult,
+  Droppable,
+} from 'react-beautiful-dnd'
 import { Task } from '../types/interfaces'
 import axios from 'axios'
 import Modal from './components/Modal'
-import EditMenu from './components/EditMenu'
 import Loader from './components/Loader'
 
 function App(): JSX.Element {
@@ -12,12 +16,24 @@ function App(): JSX.Element {
   const [onProgressTasks, setOnProgressTasks] = useState<Task[]>([])
   const [doneTasks, setDoneTasks] = useState<Task[]>([])
 
+  const filterTasks = (tasks: Task[]) => {
+    const todos = tasks.filter((item) => item.column === 1)
+    const progress = tasks.filter((item) => item.column === 2)
+    const done = tasks.filter((item) => item.column === 3)
+    return { todos, progress, done }
+  }
+
   useEffect(() => {
     setLoading(true)
     axios
       .get('http://localhost:8000/tasks')
       .then((response) => response.data)
-      .then((data) => {})
+      .then((data) => {
+        const { done, progress, todos } = filterTasks(data)
+        setDoneTasks(done)
+        setOnProgressTasks(progress)
+        setTodosTasks(todos)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -54,7 +70,7 @@ function App(): JSX.Element {
               >
                 {titleCase(item?.priority)}
               </div>
-              <EditMenu id={item?._id} setTasks={setTasks} />
+              {/* <EditMenu id={item?._id} setTasks={setTasks} /> */}
             </div>
             <div className="flex flex-col gap-2 mt-5">
               <div className="font-bold text-2xl">{item?.title}</div>
@@ -66,7 +82,7 @@ function App(): JSX.Element {
     ))
   }
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: DropResult) => {
     // const { source, destination, draggableId } = result
     // if (!destination) return
     // if (
@@ -103,7 +119,7 @@ function App(): JSX.Element {
                   <div className="rounded-full bg-primary h-2 w-2"></div>
                   <div className="font-medium text-[16px]">To Do</div>
                   <div className="rounded-full bg-gray-200 px-[0.5rem] text-[#625F6D] font-semibold">
-                    {}
+                    {todosTasks?.length}
                   </div>
                 </div>
                 <div
@@ -132,7 +148,7 @@ function App(): JSX.Element {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    {renderTasks([])}
+                    {renderTasks(todosTasks)}
                     {provided.placeholder}
                   </div>
                 )}
@@ -143,7 +159,7 @@ function App(): JSX.Element {
                 <div className="rounded-full bg-secondary h-2 w-2"></div>
                 <div className="font-medium text-[16px]">On Progress</div>
                 <div className="rounded-full bg-gray-200 px-[0.5rem] text-[#625F6D] font-semibold">
-                  {tasks?.onProgress?.length}
+                  {onProgressTasks?.length}
                 </div>
               </div>
               <div className="h-1 bg-yellow-500 w-full mt-5"></div>
@@ -154,7 +170,7 @@ function App(): JSX.Element {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    {renderTasks([])}
+                    {renderTasks(onProgressTasks)}
                     {provided.placeholder}
                   </div>
                 )}
@@ -165,7 +181,7 @@ function App(): JSX.Element {
                 <div className="rounded-full bg-tertiary h-2 w-2"></div>
                 <div className="font-medium text-[16px]">Done</div>
                 <div className="rounded-full bg-gray-200 px-[0.5rem] text-[#625F6D] font-semibold">
-                  {tasks?.doneTasks?.length}
+                  {doneTasks?.length}
                 </div>
               </div>
               <div className="h-1 bg-green-500 w-full mt-5"></div>
@@ -176,7 +192,7 @@ function App(): JSX.Element {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                   >
-                    {renderTasks([])}
+                    {renderTasks(doneTasks)}
                     {provided.placeholder}
                   </div>
                 )}
@@ -185,7 +201,7 @@ function App(): JSX.Element {
           </div>
         </DragDropContext>
       )}
-      <Modal isOpen={isOpen} setIsOpen={setIsOpen} setTasks={setTasks} />
+      <Modal isOpen={isOpen} setIsOpen={setIsOpen} setTasks={setTodosTasks} />
     </Fragment>
   )
 }
