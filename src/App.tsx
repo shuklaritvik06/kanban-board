@@ -156,6 +156,9 @@ function App(): JSX.Element {
         <Loader />
       ) : (
         <DragDropContext onDragEnd={onDragEnd}>
+          <h1 className="text-4xl font-semibold text-[#333] text-center mt-7">
+            Kanban Board
+          </h1>
           <div className="grid grid-cols-1 lg:grid-cols-3 max-w-7xl mx-auto gap-3 mt-20 px-2">
             <Droppable droppableId="toDos">
               {(provided) => (
