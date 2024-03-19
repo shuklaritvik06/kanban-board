@@ -4,6 +4,7 @@ This project aims to provide a simple yet effective Kanban board implementation 
 
 ![](./screenshots/Board%20Screen.png)
 ![](./screenshots/Add%20Task.png)
+![](./screenshots/Edit%20Task.png)
 
 ## Getting Started
 
